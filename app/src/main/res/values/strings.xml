@@ -11,6 +11,8 @@
     <string name="me_title">My Electric</string>
     <string name="me_settings_title">My Electric Feeds</string>
 
+    <string name="analyzer_title">Energy Analyzer</string>
+
     <string name="ms_title">My Solar</string>
     <string name="ms_settings_title">My Solar Feeds</string>
 

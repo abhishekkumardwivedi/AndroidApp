@@ -21,6 +21,8 @@ android {
 
 repositories {
     maven { url "https://jitpack.io" }
+    maven { url "https://repo.eclipse.org/content/repositories/paho-releases/" }
+
 }
 
 dependencies {
@@ -29,4 +31,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:recyclerview-v7:23.3.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
+    compile('org.eclipse.paho:org.eclipse.paho.android.service:1.0.2') {
+        exclude module: 'support-v4'
+    }
 }
