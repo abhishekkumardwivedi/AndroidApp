@@ -264,6 +264,7 @@ public class MainActivity extends AppCompatActivity
             case registrationView:
                 frag = new RegistrationFragment();
                 tag = "registration_fragment";
+                break;
             default:
                 frag = new MyElectricMainFragment();
                 tag = getResources().getString(R.string.tag_me_fragment);

@@ -21,7 +21,7 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
     private Context mContext;
     private PieChart pieChart;
     private Switch mSwitch;
-    private EnergyStatUpdateController statController;
+    private MQTTController statController;
     HashMap<String, DeviceStat> deviceStat = new HashMap<String, DeviceStat>();
 
     @Override
@@ -29,7 +29,7 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
         pieChart = new PieChart(mContext);
-        statController = new EnergyStatUpdateController(mContext);
+        statController = new MQTTController(mContext);
         statController.startEnergyUpdates();
     }
 

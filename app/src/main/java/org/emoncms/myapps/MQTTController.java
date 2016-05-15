@@ -6,19 +6,22 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.StringTokenizer;
 
 
-public class EnergyStatUpdateController {
+public class MQTTController {
 
-    private static final String TAG = EnergyStatUpdateController.class.getName();
+    private static final String TAG = MQTTController.class.getName();
 
     private static String MAC_ADDRESS = "123456";
     private static final String TOPIC_TOKEN_KEY = "Kwh/" + MAC_ADDRESS + "/token";
     private static final String TOPIC_POWER_RATING = "Kwh/" + MAC_ADDRESS;
     private static final String TOPIC_INDIVIDUAL_STATE = "Kwh/" + MAC_ADDRESS + "/load";
     private static final String TOPIC_INDIVIDUAL_LOAD = "Kwh/" + MAC_ADDRESS + "/pchart";
+    public static final String TOPIC_DEVICE_REGISTER = "Kwh/" + MAC_ADDRESS + "/apikey";
 
     private static final String TOPIC_SWITCH_STATUS = "";
     private static final String DEFAULT_BROKER = "192.168.0.101";
@@ -32,7 +35,7 @@ public class EnergyStatUpdateController {
 
     private static final String TOPIC_INVESTIGATION_MODE = "Kwh/" + MAC_ADDRESS +"/token";
 
-    public EnergyStatUpdateController(Context context) {
+    public MQTTController(Context context) {
         mContext = context;
     }
 
@@ -60,8 +63,26 @@ public class EnergyStatUpdateController {
         }).start();
     }
 
-    public static void setInvestigationMode(boolean isChecked) {
-        MQTTHelper.publish(TOPIC_INVESTIGATION_MODE, isChecked);
+    public void setInvestigationMode(boolean isChecked) {
+        if(!MQTTHelper.isConnected()) {
+           setupMqttClient();
+        }
+        if(MQTTHelper.isConnected()) {
+            MQTTHelper.publish(TOPIC_INVESTIGATION_MODE, isChecked);
+        } else {
+            Toast.makeText(mContext, "Server unreachable!\n", Toast.LENGTH_SHORT);
+        }
+    }
+
+    public void registerDevice(String key) {
+        if(!MQTTHelper.isConnected()) {
+            setupMqttClient();
+        }
+        if(MQTTHelper.isConnected()) {
+            MQTTHelper.publish(TOPIC_DEVICE_REGISTER, key);
+        } else {
+            Toast.makeText(mContext, "Server unreachable!\n", Toast.LENGTH_SHORT);
+        }
     }
 
     public static interface CallBack {
@@ -102,7 +123,7 @@ public class EnergyStatUpdateController {
         return data;
     }
 
-    private Runnable subscriber  = new Runnable() {
+    static private Runnable subscriber  = new Runnable() {
         @Override
         public void run() {
             MQTTHelper.subscribe(TOPIC_INDIVIDUAL_LOAD);

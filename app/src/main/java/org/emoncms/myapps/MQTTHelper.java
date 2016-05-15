@@ -19,11 +19,16 @@ public class MQTTHelper {
 		mContext = context;
 	}
 
-	public static MqttClient sMqttClient;
+	private static MqttClient sMqttClient;
 
-	public static MqttClient getClient() {
+	private static MqttClient getClient() {
 		return sMqttClient;
 	}
+
+	public static boolean isConnected() {
+        if(sMqttClient == null) return false;
+        return sMqttClient.isConnected();
+    }
 
 	public static boolean connect(String url, String port, String client) {
 		try {
@@ -42,7 +47,7 @@ public class MQTTHelper {
 
 				@Override
 				public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-                    EnergyStatUpdateController.MqttMessageHandler(s, mqttMessage);
+                    MQTTController.MqttMessageHandler(s, mqttMessage);
 				}
 
 				@Override

@@ -6,18 +6,28 @@
         android:layout_height="match_parent"
         xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter key you received on web registration.\nGo to http://emoncms.com to get details."
+            android:id="@+id/textView"
+            android:layout_marginTop="44dp" android:layout_alignParentTop="true"
+            android:layout_alignLeft="@+id/keyText" android:layout_alignStart="@+id/keyText"
+            android:layout_alignRight="@+id/keyText" android:layout_alignEnd="@+id/keyText"/>
     <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/keyText"
             android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" android:layout_marginTop="199dp"
-            android:text="Key" android:layout_marginLeft="5dp" android:layout_marginRight="5dp"/>
+            android:layout_marginLeft="15dp" android:layout_marginRight="15dp"
+            android:layout_marginBottom="10dp"/>
     <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Register"
-            android:id="@+id/regButton" android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"/>
+            android:id="@+id/regButton"
+            android:layout_below="@+id/keyText" android:layout_centerHorizontal="true"
+            android:layout_marginTop="51dp"/>
 </RelativeLayout>
