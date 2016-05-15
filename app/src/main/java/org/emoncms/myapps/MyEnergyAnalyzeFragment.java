@@ -1,6 +1,11 @@
 package org.emoncms.myapps;
 
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -67,6 +72,7 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) actionBar.setTitle(R.string.analyzer_title);
 
+        drawPie();
         drawTable();
     }
 
@@ -125,7 +131,49 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
         }
     }
 
-    private  void drawTable() {
+    private void drawPie() {
+        PieChart pieChart = (PieChart) getActivity().findViewById(R.id.pie);
+        ArrayList<Entry> entries = new ArrayList<>();
+        ArrayList<String> labels = new ArrayList<String>();
+        Context context = getActivity();
+
+        int rows = deviceStat.size();
+
+        for (int i = 0; i < rows; i++) {
+            DeviceStat stat = deviceStat.get(i);
+            entries.add(new Entry(deviceStat.get(i).getLoad(), i));
+            labels.add(deviceStat.get(i).getName());
+        }
+
+        PieDataSet dataset = new PieDataSet(entries, "");
+
+        PieData data = new PieData(labels, dataset);
+        pieChart.setData(data);
+        pieChart.setDrawHoleEnabled(false);
+        pieChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART);
+
+        pieChart.setDescription("");
+
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colors.add(c);
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colors.add(c);
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        colors.add(ColorTemplate.getHoloBlue());
+        dataset.setColors(colors);
+
+        pieChart.animateY(200);
+    }
+
+    private void drawTable() {
         Context context = getActivity();
         TableLayout stk = (TableLayout) getView().findViewById(R.id.tl);
         int rows = deviceStat.size();

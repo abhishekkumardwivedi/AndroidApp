@@ -10,8 +10,13 @@
             android:id="@+id/lpie"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="1" >
-    </LinearLayout>
+            android:layout_weight="1">
+
+    <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pie"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+            </LinearLayout>
     <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

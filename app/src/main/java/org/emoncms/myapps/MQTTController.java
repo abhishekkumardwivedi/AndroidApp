@@ -70,6 +70,7 @@ public class MQTTController {
         if(MQTTHelper.isConnected()) {
             MQTTHelper.publish(TOPIC_INVESTIGATION_MODE, isChecked);
         } else {
+            Looper.prepare();
             Toast.makeText(mContext, "Server unreachable!\n", Toast.LENGTH_SHORT);
         }
     }
