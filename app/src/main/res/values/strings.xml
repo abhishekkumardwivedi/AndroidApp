@@ -30,6 +30,7 @@
     <string name="fullscreen">Fullscreen</string>
     <string name="error">Error</string>
     <string name="settings">Settings</string>
+    <string name="register">Register</string>
 
     <string name="me_not_configured_text">PLEASE CONFIGURE FEEDS</string>
     <string name="feed_download_error_message">Unable to download feed list. Please check URL and API settings as well as connectivity to emoncms.</string>
