@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-
-
-</LinearLayout-->
 <LinearLayout
         android:orientation="vertical"
         android:id="@+id/main_layout"
@@ -19,7 +12,12 @@
             android:layout_height="fill_parent"
             android:layout_weight="1" >
     </LinearLayout>
-    <LinearLayout
+    <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scrollbars="none"
+            android:layout_weight="1">
+        <LinearLayout
             android:orientation="vertical"
             android:id="@+id/llist"
             android:layout_width="fill_parent"
@@ -27,30 +25,29 @@
             android:layout_weight="1" >
         <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:id="@+id/tl" android:nestedScrollingEnabled="false">
             <TableRow
-                    android:id="@+id/title_row"
+                    android:id="@+id/tlheader"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent">
                 <TextView
                         android:id="@+id/number"
-                        android:text="No"
+                        android:text=" No "
                         android:layout_weight="1"
                         android:padding="20dp"
                         android:gravity="center"
                         android:textStyle="bold"/>
                 <TextView
                         android:id="@+id/name"
-                        android:text="DeviceName"
+                        android:text=" DeviceName "
                         android:layout_weight="5"
                         android:padding="20dp"
                         android:gravity="center"
-                        android:textStyle="bold"
-
-                />
+                        android:textStyle="bold"/>
                 <TextView
                         android:id="@+id/power"
-                        android:text="Power"
+                        android:text=" Power "
                         android:layout_weight="3"
                         android:padding="20dp"
                         android:gravity="center"
@@ -58,20 +55,19 @@
                 />
                 <TextView
                         android:id="@+id/status"
-                        android:text="Status"
+                        android:text=" Status "
                         android:layout_weight="2"
                         android:padding="20dp"
                         android:gravity="center"
                         android:textStyle="bold"
                 />
             </TableRow>
-
         </TableLayout>
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
     <Switch
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Enable Investigation Mode"
             android:id="@+id/switch1"/>
-
 </LinearLayout>

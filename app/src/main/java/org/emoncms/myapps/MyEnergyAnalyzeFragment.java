@@ -3,16 +3,22 @@ package org.emoncms.myapps;
 import com.github.mikephil.charting.charts.PieChart;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyEnergyAnalyzeFragment extends android.app.Fragment {
 
@@ -22,7 +28,8 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
     private PieChart pieChart;
     private Switch mSwitch;
     private MQTTController statController;
-    HashMap<String, DeviceStat> deviceStat = new HashMap<String, DeviceStat>();
+  //  HashMap<String, DeviceStat> deviceStat = new HashMap<String, DeviceStat>();
+    List<DeviceStat> deviceStat = new ArrayList<DeviceStat>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,8 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
         mSwitch.setOnCheckedChangeListener(btnListener);
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) actionBar.setTitle(R.string.analyzer_title);
+
+        drawTable();
     }
 
     public class DeviceStat {
@@ -107,8 +116,43 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
             return mState;
         }
 
+        public int getRating() {
+            return mRating;
+        }
+
         public String getColor() {
             return null;
+        }
+    }
+
+    private  void drawTable() {
+        Context context = getActivity();
+        TableLayout stk = (TableLayout) getView().findViewById(R.id.tl);
+        int rows = deviceStat.size();
+        for (int i = 0; i < rows; i++) {
+            DeviceStat stat = deviceStat.get(i);
+            TableRow tbrow = new TableRow(context);
+            TextView c0 = new TextView(context);
+            c0.setText("" + stat.getId());
+            c0.setTextColor(Color.WHITE);
+            c0.setGravity(Gravity.CENTER);
+            tbrow.addView(c0);
+            TextView c1 = new TextView(context);
+            c1.setText("" + stat.getName());
+            c1.setTextColor(Color.WHITE);
+            c1.setGravity(Gravity.CENTER);
+            tbrow.addView(c1);
+            TextView c2 = new TextView(context);
+            c2.setText("" + stat.getRating());
+            c2.setTextColor(Color.WHITE);
+            c2.setGravity(Gravity.CENTER);
+            tbrow.addView(c2);
+            TextView c3 = new TextView(context);
+            c3.setText("" + stat.getState());
+            c2.setTextColor(Color.WHITE);
+            c3.setGravity(Gravity.CENTER);
+            tbrow.addView(c3);
+            stk.addView(tbrow);
         }
     }
 
