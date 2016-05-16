@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import java.util.StringTokenizer;
 
-
 public class MQTTController {
 
     private static final String TAG = MQTTController.class.getName();
@@ -44,6 +43,7 @@ public class MQTTController {
     }
 
     public void setupMqttClient() {
+        Log.d(TAG, "Lets connect ... ");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -54,10 +54,12 @@ public class MQTTController {
                 String client = CLIENT_ID;
 
                 if(MQTTHelper.connect(broker, port, client)) {
+                    Log.d(TAG, "connected!!");
                     Thread t = new Thread(subscriber);
                     t.start();
                 } else {
                     Looper.prepare();
+                    Log.d(TAG, "failed to connect!!");
                 }
             }
         }).start();
@@ -104,7 +106,6 @@ public class MQTTController {
     }
 
     public static void MqttMessageHandler(String s, MqttMessage mqttMessage) {
-
         String [] data = parseMqttMessage(mqttMessage);
         if (s.equals(TOPIC_INDIVIDUAL_LOAD) && pChartUpdateListener != null) {
             pChartUpdateListener.updateMessage(data);

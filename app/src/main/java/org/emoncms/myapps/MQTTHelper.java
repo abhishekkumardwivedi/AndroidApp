@@ -10,7 +10,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import android.content.Context;
 
-public class MQTTHelper {
+public class MQTTHelper{
 
 	private static final String TAG = MQTTHelper.class.getName();
 	private static Context mContext;

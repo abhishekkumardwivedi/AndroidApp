@@ -12,11 +12,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -34,7 +36,7 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
     private Switch mSwitch;
     private MQTTController statController;
   //  HashMap<String, DeviceStat> deviceStat = new HashMap<String, DeviceStat>();
-    List<DeviceStat> deviceStat = new ArrayList<DeviceStat>();
+    private static List<DeviceStat> deviceStat = new ArrayList<DeviceStat>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,9 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
         pieChart = new PieChart(mContext);
         statController = new MQTTController(mContext);
         statController.startEnergyUpdates();
+        pieUpdater();
+        deviceUpdater();
+        dumpDeviceStat();
     }
 
     @Override
@@ -76,60 +81,61 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
         drawTable();
     }
 
-    public class DeviceStat {
-        int mId;
-        String mName;
-        int mLoadPercent;
-        String mState;
-        int mRating;
-
-        public DeviceStat(String id, String load) {
-            mId = Integer.parseInt(id);
-            mLoadPercent = Integer.parseInt(load);
+    private void deviceUpdater() {
+            statController.registerDeviceStateListener(new MQTTController.CallBack() {
+                @Override
+                public void updateMessage(String[] msg) {
+                    Log.d(TAG, "dev: " + msg[0] + "|" + msg[1] + "|" + msg[2]);
+                    int i;
+                    for(i = 0; i < deviceStat.size(); i++) {
+                        if(deviceStat.get(i).getId() == Integer.parseInt(msg[0])) {
+                            DeviceStat device = deviceStat.get(i);
+                            if(device.getState() == null || !device.getState().equals(msg[1])) {
+                                device.setState(msg[1]);
+                                deviceStat.remove(i);
+                                deviceStat.add(device);
+                                //updateTable();
+                            }
+                            break;
+                        }
+                    }
+                    if(i == deviceStat.size()) {
+                        DeviceStat device = new DeviceStat(msg[0], msg[1], msg[2]);
+                        deviceStat.add(device);
+                        //updateTable();
+                    }
+                    dumpDeviceStat();
+                }
+            });
         }
 
-        public DeviceStat(String id, String state, String rating) {
-            mId = Integer.parseInt(id);
-            mState = state;
-            mRating = Integer.parseInt(rating);
+    private void pieUpdater() {
+            statController.registerPChartDataListener(new MQTTController.CallBack() {
+                @Override
+                public void updateMessage(String[] msg) {
+                    Log.d(TAG, "pie: " + msg[0] + "|" + msg[1]);
+                    int i;
+                    for(i = 0; i < deviceStat.size(); i++) {
+                        if(deviceStat.get(i).getId() == Integer.parseInt(msg[0])) {
+                            DeviceStat device = deviceStat.get(i);
+                            if(device.getLoad() == -1 || !(device.getLoad() == Integer.parseInt(msg[1]))) {
+                                device.setLoad(Integer.parseInt(msg[1]));
+                                deviceStat.remove(i);
+                                deviceStat.add(device);
+                                //updatePie();
+                            }
+                            break;
+                        }
+                    }
+                    if(i == deviceStat.size()) {
+                        DeviceStat device = new DeviceStat(msg[0], msg[1]);
+                        deviceStat.add(device);
+                        //updatePie();
+                    }
+                    dumpDeviceStat();
+                }
+            });
         }
-
-        public void setState(String state) {
-            mState = state;
-        }
-
-        public void setName(String name) {
-            mName = name;
-        }
-
-        public int getId() {
-            return mId;
-        }
-
-        public String getName() {
-            return mName;
-        }
-
-        public int getLoad() {
-            return mLoadPercent;
-        }
-
-        public void setLoad(int load) {
-            mLoadPercent = load;
-        }
-
-        public String getState() {
-            return mState;
-        }
-
-        public int getRating() {
-            return mRating;
-        }
-
-        public String getColor() {
-            return null;
-        }
-    }
 
     private void drawPie() {
         PieChart pieChart = (PieChart) getActivity().findViewById(R.id.pie);
@@ -204,6 +210,21 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
         }
     }
 
+    private void dumpDeviceStat() {
+        Log.d(TAG, "____________________");
+        for (int i = 0; i < deviceStat.size(); i++) {
+            DeviceStat device = deviceStat.get(i);
+            Log.d(TAG, "ID:     " + device.getId());
+            Log.d(TAG, "Name:   " + device.getName());
+            Log.d(TAG, "Rating: " + device.getRating());
+            Log.d(TAG, "State:  " + device.getState());
+            Log.d(TAG, "Load:   " + device.getLoad());
+            Log.d(TAG, "Color:  " + device.getColor());
+            Log.d(TAG, "---------   ");
+        }
+        Log.d(TAG, "____________________");
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.ea_fragment, container, false);
@@ -217,5 +238,66 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    public class DeviceStat {
+        int mId;
+        String mName;
+        int mLoadPercent = -1;
+        String mState;
+        int mRating;
+
+        public DeviceStat(String id, String load) {
+            mId = Integer.parseInt(id);
+            mLoadPercent = Integer.parseInt(load);
+            mName = "-";
+            mState = "-";
+            mRating = -1;
+
+        }
+
+        public DeviceStat(String id, String state, String rating) {
+            mId = Integer.parseInt(id);
+            mState = state;
+            mRating = Integer.parseInt(rating);
+            mLoadPercent = 0;
+            mName = "-";
+        }
+
+        public void setState(String state) {
+            mState = state;
+        }
+
+        public void setName(String name) {
+            mName = name;
+        }
+
+        public int getId() {
+            return mId;
+        }
+
+        public String getName() {
+            return mName;
+        }
+
+        public int getLoad() {
+            return mLoadPercent;
+        }
+
+        public void setLoad(int load) {
+            mLoadPercent = load;
+        }
+
+        public String getState() {
+            return mState;
+        }
+
+        public int getRating() {
+            return mRating;
+        }
+
+        public String getColor() {
+            return null;
+        }
     }
 }
