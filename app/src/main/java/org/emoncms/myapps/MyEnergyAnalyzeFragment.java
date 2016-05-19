@@ -8,18 +8,21 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -100,6 +103,7 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
                                     @Override
                                     public void run() {
                                         drawTable();
+                                        drawPie();
                                     }
                                 });
                             }
@@ -113,6 +117,7 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
                             @Override
                             public void run() {
                                 drawTable();
+                                drawPie();
                             }
                         });
                     }
@@ -228,6 +233,14 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
             c1.setGravity(Gravity.CENTER);
             c1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 6f));
             c1.setPadding(20,2, 20, 2);
+            final int index = i;
+            c1.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    editDeviceName(index);
+                    return true;
+                }
+            });
             tbrow.addView(c1);
 
             TextView c2 = new TextView(context);
@@ -248,6 +261,38 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
 
             tableLayout.addView(tbrow);
         }
+    }
+
+    private void editDeviceName(final int index) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Enter Device Name");
+
+        final EditText input = new EditText(getActivity());
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DeviceStat device = deviceStat.get(index);
+                device.setName(input.getText().toString());
+                deviceStat.set(index, device);
+                uiThread.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        drawTable();
+                        drawPie();
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
     private View createTitleView() {
