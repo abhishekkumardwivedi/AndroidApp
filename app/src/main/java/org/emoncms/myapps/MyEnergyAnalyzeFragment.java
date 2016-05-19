@@ -7,6 +7,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -35,8 +36,8 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
     private PieChart pieChart;
     private Switch mSwitch;
     private MQTTController statController;
-  //  HashMap<String, DeviceStat> deviceStat = new HashMap<String, DeviceStat>();
     private static List<DeviceStat> deviceStat = new ArrayList<DeviceStat>();
+    Activity uiThread;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
         pieChart = new PieChart(mContext);
         statController = new MQTTController(mContext);
         statController.startEnergyUpdates();
+        uiThread = getActivity();
         pieUpdater();
         deviceUpdater();
         dumpDeviceStat();
@@ -94,7 +96,12 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
                                 device.setState(msg[1]);
                                 deviceStat.remove(i);
                                 deviceStat.add(device);
-                                //updateTable();
+                                uiThread.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        drawTable();
+                                    }
+                                });
                             }
                             break;
                         }
@@ -102,7 +109,12 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
                     if(i == deviceStat.size()) {
                         DeviceStat device = new DeviceStat(msg[0], msg[1], msg[2]);
                         deviceStat.add(device);
-                        //updateTable();
+                        uiThread.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                drawTable();
+                            }
+                        });
                     }
                     dumpDeviceStat();
                 }
@@ -122,7 +134,12 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
                                 device.setLoad(Integer.parseInt(msg[1]));
                                 deviceStat.remove(i);
                                 deviceStat.add(device);
-                                //updatePie();
+                                uiThread.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        drawPie();
+                                    }
+                                });
                             }
                             break;
                         }
@@ -130,7 +147,12 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
                     if(i == deviceStat.size()) {
                         DeviceStat device = new DeviceStat(msg[0], msg[1]);
                         deviceStat.add(device);
-                        //updatePie();
+                        uiThread.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                drawPie();
+                            }
+                        });
                     }
                     dumpDeviceStat();
                 }
@@ -139,6 +161,7 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
 
     private void drawPie() {
         PieChart pieChart = (PieChart) getActivity().findViewById(R.id.pie);
+        pieChart.removeAllViews();
         ArrayList<Entry> entries = new ArrayList<>();
         ArrayList<String> labels = new ArrayList<String>();
         Context context = getActivity();
@@ -175,39 +198,102 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
 
         colors.add(ColorTemplate.getHoloBlue());
         dataset.setColors(colors);
-
         pieChart.animateY(200);
     }
 
     private void drawTable() {
         Context context = getActivity();
-        TableLayout stk = (TableLayout) getView().findViewById(R.id.tl);
+        TableLayout tableLayout = (TableLayout) getView().findViewById(R.id.tl);
+        tableLayout.removeAllViews();
+
+        tableLayout.addView(createTitleView());
         int rows = deviceStat.size();
         for (int i = 0; i < rows; i++) {
             DeviceStat stat = deviceStat.get(i);
             TableRow tbrow = new TableRow(context);
+            tbrow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                    TableRow.LayoutParams.WRAP_CONTENT));
+
             TextView c0 = new TextView(context);
             c0.setText("" + stat.getId());
             c0.setTextColor(Color.WHITE);
             c0.setGravity(Gravity.CENTER);
+            c0.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
+            c0.setPadding(20,2, 20, 2);
             tbrow.addView(c0);
-            TextView c1 = new TextView(context);
+
+            final TextView c1 = new TextView(context);
             c1.setText("" + stat.getName());
             c1.setTextColor(Color.WHITE);
             c1.setGravity(Gravity.CENTER);
+            c1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 6f));
+            c1.setPadding(20,2, 20, 2);
             tbrow.addView(c1);
+
             TextView c2 = new TextView(context);
             c2.setText("" + stat.getRating());
             c2.setTextColor(Color.WHITE);
             c2.setGravity(Gravity.CENTER);
+            c2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
+            c2.setPadding(20,2, 20, 2);
             tbrow.addView(c2);
+
             TextView c3 = new TextView(context);
             c3.setText("" + stat.getState());
-            c2.setTextColor(Color.WHITE);
+            c3.setTextColor(Color.WHITE);
             c3.setGravity(Gravity.CENTER);
+            c3.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
+            c3.setPadding(20,2, 20, 2);
             tbrow.addView(c3);
-            stk.addView(tbrow);
+
+            tableLayout.addView(tbrow);
         }
+    }
+
+    private View createTitleView() {
+        Context context = getActivity();
+
+            TableRow tbrow = new TableRow(context);
+            tbrow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                    TableRow.LayoutParams.WRAP_CONTENT));
+
+            TextView c0 = new TextView(context);
+            c0.setText("No");
+            c0.setBackgroundColor(Color.BLACK);
+            c0.setTextColor(Color.WHITE);
+            c0.setGravity(Gravity.CENTER);
+            c0.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
+            c0.setPadding(20,20, 20, 20);
+            tbrow.addView(c0);
+
+            TextView c1 = new TextView(context);
+            c1.setText("DeviceName");
+            c1.setBackgroundColor(Color.BLACK);
+            c1.setTextColor(Color.WHITE);
+            c1.setGravity(Gravity.CENTER);
+            c1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 6f));
+            c1.setPadding(20,20, 20, 20);
+            tbrow.addView(c1);
+
+            TextView c2 = new TextView(context);
+            c2.setText("Power");
+            c2.setBackgroundColor(Color.BLACK);
+            c2.setTextColor(Color.WHITE);
+            c2.setGravity(Gravity.CENTER);
+            c2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
+            c2.setPadding(20,20, 20, 20);
+            tbrow.addView(c2);
+
+            TextView c3 = new TextView(context);
+            c3.setText("Status");
+            c3.setBackgroundColor(Color.BLACK);
+            c3.setTextColor(Color.WHITE);
+            c3.setGravity(Gravity.CENTER);
+            c3.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
+            c3.setPadding(20,20, 20, 20);
+            tbrow.addView(c3);
+        return tbrow;
+
     }
 
     private void dumpDeviceStat() {
