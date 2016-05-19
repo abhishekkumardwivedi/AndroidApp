@@ -4,6 +4,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -15,12 +16,12 @@ public class MQTTController {
 
     private static final String TAG = MQTTController.class.getName();
 
-    private static String MAC_ADDRESS = "123456";
-    private static final String TOPIC_TOKEN_KEY = "Kwh/" + MAC_ADDRESS + "/token";
-    private static final String TOPIC_POWER_RATING = "Kwh/" + MAC_ADDRESS;
-    private static final String TOPIC_INDIVIDUAL_STATE = "Kwh/" + MAC_ADDRESS + "/load";
-    private static final String TOPIC_INDIVIDUAL_LOAD = "Kwh/" + MAC_ADDRESS + "/pchart";
-    public static final String TOPIC_DEVICE_REGISTER = "Kwh/" + MAC_ADDRESS + "/apikey";
+    private static String MAC_ADDRESS;
+    private static String TOPIC_TOKEN_KEY;
+    private static String TOPIC_POWER_RATING;
+    private static String TOPIC_INDIVIDUAL_STATE;
+    private static String TOPIC_INDIVIDUAL_LOAD;
+    public static String TOPIC_DEVICE_REGISTER;
 
     private static final String TOPIC_SWITCH_STATUS = "";
     private static final String DEFAULT_BROKER = "192.168.0.101";
@@ -44,6 +45,9 @@ public class MQTTController {
 
     public void setupMqttClient() {
         Log.d(TAG, "Lets connect ... ");
+        WifiManager wifiManager = (WifiManager)mContext.getSystemService(Context.WIFI_SERVICE);
+        MAC_ADDRESS = wifiManager.getConnectionInfo().getMacAddress();
+        configTopics();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -63,6 +67,14 @@ public class MQTTController {
                 }
             }
         }).start();
+    }
+
+    private void configTopics() {
+        TOPIC_TOKEN_KEY = "Kwh/" + MAC_ADDRESS + "/token";
+        TOPIC_POWER_RATING = "Kwh/" + MAC_ADDRESS;
+        TOPIC_INDIVIDUAL_STATE = "Kwh/" + MAC_ADDRESS + "/load";
+        TOPIC_INDIVIDUAL_LOAD = "Kwh/" + MAC_ADDRESS + "/pchart";
+        TOPIC_DEVICE_REGISTER = "Kwh/" + MAC_ADDRESS + "/apikey";
     }
 
     public void setInvestigationMode(boolean isChecked) {
