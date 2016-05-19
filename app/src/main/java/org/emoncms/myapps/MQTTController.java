@@ -17,10 +17,10 @@ public class MQTTController {
     private static final String TAG = MQTTController.class.getName();
 
     private static String MAC_ADDRESS;
-    private static String TOPIC_TOKEN_KEY;
     private static String TOPIC_POWER_RATING;
     private static String TOPIC_INDIVIDUAL_STATE;
     private static String TOPIC_INDIVIDUAL_LOAD;
+    public static String TOPIC_TOKEN_KEY;
     public static String TOPIC_DEVICE_REGISTER;
 
     private static final String TOPIC_SWITCH_STATUS = "";
@@ -75,6 +75,8 @@ public class MQTTController {
         TOPIC_INDIVIDUAL_STATE = "Kwh/" + MAC_ADDRESS + "/load";
         TOPIC_INDIVIDUAL_LOAD = "Kwh/" + MAC_ADDRESS + "/pchart";
         TOPIC_DEVICE_REGISTER = "Kwh/" + MAC_ADDRESS + "/apikey";
+        Log.d(TAG, "STAT:" + TOPIC_INDIVIDUAL_STATE);
+        Log.d(TAG, "LOAD:" + TOPIC_INDIVIDUAL_LOAD);
     }
 
     public void setInvestigationMode(boolean isChecked) {
