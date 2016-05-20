@@ -20,6 +20,7 @@ public class MQTTController {
     private static String TOPIC_POWER_RATING;
     private static String TOPIC_INDIVIDUAL_STATE;
     private static String TOPIC_INDIVIDUAL_LOAD;
+    private static String TOPIC_TOPUP_CREDIT;
     public static String TOPIC_TOKEN_KEY;
     public static String TOPIC_DEVICE_REGISTER;
 
@@ -30,6 +31,7 @@ public class MQTTController {
 
     private static CallBack pChartUpdateListener;
     private static CallBack deviceStateListener;
+    private static CallBack topupCreditListener;
 
     private Context mContext;
 
@@ -37,13 +39,15 @@ public class MQTTController {
 
     public MQTTController(Context context) {
         mContext = context;
+        startEnergyUpdates();
     }
 
-    public void startEnergyUpdates() {
+    private void startEnergyUpdates() {
         setupMqttClient();
+        //If want to tell anything to server here?
     }
 
-    public void setupMqttClient() {
+    private void setupMqttClient() {
         Log.d(TAG, "Lets connect ... ");
         WifiManager wifiManager = (WifiManager)mContext.getSystemService(Context.WIFI_SERVICE);
         MAC_ADDRESS = wifiManager.getConnectionInfo().getMacAddress();
@@ -75,8 +79,7 @@ public class MQTTController {
         TOPIC_INDIVIDUAL_STATE = "Kwh/" + MAC_ADDRESS + "/load";
         TOPIC_INDIVIDUAL_LOAD = "Kwh/" + MAC_ADDRESS + "/pchart";
         TOPIC_DEVICE_REGISTER = "Kwh/" + MAC_ADDRESS + "/apikey";
-        Log.d(TAG, "STAT:" + TOPIC_INDIVIDUAL_STATE);
-        Log.d(TAG, "LOAD:" + TOPIC_INDIVIDUAL_LOAD);
+        TOPIC_TOPUP_CREDIT = "Kwh/" + MAC_ADDRESS + "/credit";
     }
 
     public void setInvestigationMode(boolean isChecked) {
@@ -91,7 +94,7 @@ public class MQTTController {
         }
     }
 
-    public void registerDevice(String key) {
+    private void registerDevice(String key) {
         if(!MQTTHelper.isConnected()) {
             setupMqttClient();
         }
@@ -114,9 +117,14 @@ public class MQTTController {
         deviceStateListener = callback;
     }
 
+    public void registerTopupCreditListener(CallBack callBack) {
+        topupCreditListener = callBack;
+    }
+
     public void unRegisterAllListeners() {
         pChartUpdateListener = null;
         deviceStateListener = null;
+        topupCreditListener = null;
     }
 
     public static void MqttMessageHandler(String s, MqttMessage mqttMessage) {
@@ -125,7 +133,9 @@ public class MQTTController {
             pChartUpdateListener.updateMessage(data);
         } else if (s.equals(TOPIC_INDIVIDUAL_STATE) && deviceStateListener != null) {
             deviceStateListener.updateMessage(data);
-        }
+        } else if (s.equals(TOPIC_TOPUP_CREDIT) && topupCreditListener != null) {
+            topupCreditListener.updateMessage(data);
+        };
     }
 
     private static String[] parseMqttMessage(MqttMessage mqttPayload) {
@@ -144,6 +154,7 @@ public class MQTTController {
         public void run() {
             MQTTHelper.subscribe(TOPIC_INDIVIDUAL_LOAD);
             MQTTHelper.subscribe(TOPIC_INDIVIDUAL_STATE);
+            MQTTHelper.subscribe(TOPIC_TOPUP_CREDIT);
         }
     };
 }

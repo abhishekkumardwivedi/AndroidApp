@@ -48,7 +48,6 @@ public class MyEnergyAnalyzeFragment extends android.app.Fragment {
         mContext = getActivity();
         pieChart = new PieChart(mContext);
         statController = new MQTTController(mContext);
-        statController.startEnergyUpdates();
         uiThread = getActivity();
         pieUpdater();
         deviceUpdater();
