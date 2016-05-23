@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/main_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/lpie"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1">
+
+    <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pie"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+            </LinearLayout>
+    <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scrollbars="none"
+            android:layout_weight="1">
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/llist"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+            <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tl" android:nestedScrollingEnabled="false">
+            </TableLayout>
+
+        </LinearLayout>
+    </ScrollView>
+    <Switch
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:padding="15dp"
+            android:text="Enable Investigation Mode"
+            android:id="@+id/switch1"/>
+</LinearLayout>

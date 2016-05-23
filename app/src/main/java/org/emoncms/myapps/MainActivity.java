@@ -1,5 +1,7 @@
 package org.emoncms.myapps;
 
+import org.eclipse.paho.client.mqttv3.MqttClient;
+
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -28,8 +30,12 @@ public class MainActivity extends AppCompatActivity
 //    int TITLE_IDS[] = {R.string.me_title, R.string.ms_title, R.string.settings};
 //    int ICONS[] = {R.drawable.ic_my_electric_white_36dp, R.drawable.ic_my_electric_white_36dp, R.drawable.ic_settings_applications_white_36dp};
 
-    int TITLE_IDS[] = {R.string.me_title, R.string.settings};
-    int ICONS[] = {R.drawable.ic_my_electric_white_36dp, R.drawable.ic_settings_applications_white_36dp};
+    int TITLE_IDS[] = {R.string.me_title, R.string.analyzer_title, R.string.topup, R.string.register,  R.string.settings};
+    int ICONS[] = {R.drawable.ic_my_electric_white_36dp,
+            R.drawable.ic_my_electric_white_36dp,
+            R.drawable.ic_settings_applications_white_36dp,
+            R.drawable.ic_settings_applications_white_36dp,
+            R.drawable.ic_settings_applications_white_36dp};
 
     RecyclerView mRecyclerView;
     RecyclerView.Adapter mAdapter;
@@ -45,6 +51,9 @@ public class MainActivity extends AppCompatActivity
         MyElectricSettingsView,
         MySolarView,
         MySolarSettingsView,
+        MyEnergyAnalyzeView,
+        topupView,
+        registrationView,
         SettingsView
     }
 
@@ -101,6 +110,15 @@ public class MainActivity extends AppCompatActivity
                             showFragment(MyAppViews.MyElectricView);
                             break;
                         case 1:
+                            showFragment(MyAppViews.MyEnergyAnalyzeView);
+                            break;
+                        case 2:
+                            showFragment(MyAppViews.topupView);
+                            break;
+                        case 3:
+                            showFragment(MyAppViews.registrationView);
+                            break;
+                        case 4:
 //                            showFragment(MyAppViews.MySolarView);
 //                            break;
 //                        case 2:
@@ -243,6 +261,18 @@ public class MainActivity extends AppCompatActivity
             case MySolarSettingsView:
                 frag = new MySolarSettingsFragment();
                 tag = getResources().getString(R.string.tag_ms_settings_fragment);
+                break;
+            case MyEnergyAnalyzeView:
+                frag = new MyEnergyAnalyzeFragment();
+                tag = "myenergy_analyze_fragment";
+                break;
+            case topupView:
+                frag = new TopupFragment();
+                tag = "topup_fragment";
+                break;
+            case registrationView:
+                frag = new RegistrationFragment();
+                tag = "registration_fragment";
                 break;
             default:
                 frag = new MyElectricMainFragment();

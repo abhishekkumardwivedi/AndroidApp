@@ -21,6 +21,19 @@
             android:summary="Connect using https, supported by emoncms.org NOT emonPi"
             android:defaultValue="true"/>
 
+        <EditTextPreference
+            android:key="emoncms_broker_url"
+            android:title="Broker URL"
+            android:summary="emoncms messaging BrokerUrl"
+            android:defaultValue="" />
+
+        <EditTextPreference
+                android:key="emoncms_broker_port"
+                android:title="Broker port"
+                android:summary="emoncms messaging broker port"
+                android:defaultValue="" />
+
+
     </PreferenceCategory>
 
     <PreferenceCategory

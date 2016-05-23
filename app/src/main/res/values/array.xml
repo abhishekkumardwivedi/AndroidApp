@@ -11,6 +11,7 @@
 
     <string-array name="me_cost_text">
         <item>System Locale</item>
+        <item>Rupiah</item>
         <item>Dollars</item>
         <item>Pounds</item>
         <item>Euros</item>
@@ -19,6 +20,7 @@
 
     <string-array name="me_cost_values">
         <item>0</item>
+        <item>Rp</item>
         <item>$</item>
         <item>£</item>
         <item>€</item>
